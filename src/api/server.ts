@@ -134,6 +134,11 @@ export async function createServer(ctx: AppContext) {
     });
   });
 
+  // Root redirect to docs
+  app.get('/', async (_request, reply) => {
+    reply.redirect('/docs');
+  });
+
   // Routes
   await app.register(healthRoutes, { prefix: '/health' });
   await app.register(campaignRoutes, { prefix: '/v1/campaigns' });
