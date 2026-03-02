@@ -1,6 +1,16 @@
 # AdPulse — Real-Time Ad Bidding & Campaign Management API
 
-A high-performance, privacy-compliant ad tech platform built with TypeScript/Node.js. Designed to demonstrate real-time bidding (<50ms p99), event-driven architecture, streaming data pipelines, and multi-touch attribution.
+A high-performance, privacy-compliant ad tech platform built with TypeScript/Node.js. Features real-time bidding (<50ms p99), a declarative AI agent API for autonomous campaign management, event-driven analytics, and multi-touch attribution.
+
+**[Live Dashboard Demo](https://dashboard-eosin-iota-70.vercel.app)** · **[API & Swagger Docs](https://adpulse-production-3916.up.railway.app/docs)**
+
+### Highlights
+
+- **7-step bidding engine** — compliance → eligibility → freq cap → pacing → scoring → creative → response, all under 50ms
+- **AI Agent API** — declare a goal like "maximize clicks for $500" and the system auto-resolves bid strategy, pacing, compliance, and creative weights
+- **Closed-loop optimization** — agents read real-time signals, adjust bid multipliers, and the scorer picks them up instantly
+- **Event pipeline** — HMAC-signed tracking pixels, deduplication, 5 attribution models, streaming budget updates
+- **85 tests** passing in <1s, zero external dependencies needed to run
 
 ## Architecture
 
@@ -255,6 +265,9 @@ adpulse/
 │   ├── integration/        # Full API lifecycle tests
 │   ├── load/               # k6 load testing scripts
 │   └── helpers/            # Test harness with in-memory providers
+├── dashboard/              # React + Vite + Tailwind dashboard
+│   ├── src/pages/          # Campaigns, AI Agent, Live Bidding, Analytics
+│   └── src/components/     # Layout, MetricCard, StatusBadge
 └── docker-compose.yml      # Postgres, Redis, Kafka, TimescaleDB
 ```
 
@@ -340,4 +353,5 @@ npm run benchmark
 - **Analytics:** TimescaleDB hypertables with continuous aggregates
 - **Testing:** Vitest (85 tests, <1s execution)
 - **Observability:** Pino structured logging
-- **Deployment:** Docker Compose, Kubernetes manifests with HPA
+- **Frontend:** React 18, Vite, Tailwind CSS, Recharts
+- **Deployment:** Docker Compose, Kubernetes manifests with HPA, Railway + Vercel
