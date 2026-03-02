@@ -1,0 +1,90 @@
+version: '3.8'
+
+services:
+  api:
+    build: .
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://adpulse:adpulse@postgres:5432/adpulse
+      - REDIS_URL=redis://redis:6379
+      - KAFKA_BROKERS=kafka:9092
+      - TIMESCALE_URL=postgresql://adpulse:adpulse@timescale:5432/adpulse_events
+      - TRACKING_SECRET=dev-secret-change-me
+      - WEBHOOK_SECRET=dev-webhook-secret-change-me
+      - USE_MEMORY_DB=false
+      - USE_MEMORY_CACHE=false
+      - USE_MEMORY_QUEUE=false
+      - NODE_ENV=development
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+      - timescale
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_DB: adpulse
+      POSTGRES_USER: adpulse
+      POSTGRES_PASSWORD: adpulse
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./db/migrations:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  timescale:
+    image: timescale/timescaledb:latest-pg16
+    environment:
+      POSTGRES_DB: adpulse_events
+      POSTGRES_USER: adpulse
+      POSTGRES_PASSWORD: adpulse
+    volumes:
+      - timescale_data:/var/lib/postgresql/data
+      - ./db/timescale-init:/docker-entrypoint-initdb.d
+    ports:
+      - "5433:5432"
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    command: redis-server --maxmemory 256mb --maxmemory-policy allkeys-lru
+
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+
+  kafka-init:
+    image: confluentinc/cp-kafka:7.5.0
+    depends_on:
+      - kafka
+    command: >
+      bash -c "
+        echo 'Waiting for Kafka...' &&
+        cub kafka-ready -b kafka:9092 1 30 &&
+        kafka-topics --create --bootstrap-server kafka:9092 --topic ad.bid-requests --partitions 12 --replication-factor 1 &&
+        kafka-topics --create --bootstrap-server kafka:9092 --topic ad.impressions --partitions 12 --replication-factor 1 &&
+        kafka-topics --create --bootstrap-server kafka:9092 --topic ad.clicks --partitions 6 --replication-factor 1 &&
+        kafka-topics --create --bootstrap-server kafka:9092 --topic ad.conversions --partitions 6 --replication-factor 1 &&
+        kafka-topics --create --bootstrap-server kafka:9092 --topic ad.budget-updates --partitions 6 --replication-factor 1 --config cleanup.policy=compact
+      "
+
+volumes:
+  postgres_data:
+  timescale_data:
