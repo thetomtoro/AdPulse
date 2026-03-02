@@ -129,5 +129,6 @@ function resolveCreatives(input: AgentCreateCampaignInput) {
       clickUrl: c.clickUrl,
     },
     weight,
+    metadata: {} as Record<string, string>,
   }));
 }

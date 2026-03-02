@@ -1,4 +1,4 @@
-import Redis from 'ioredis';
+import { Redis } from 'ioredis';
 import type { ICacheProvider } from '../interfaces.js';
 
 export class RedisCacheProvider implements ICacheProvider {

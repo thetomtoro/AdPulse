@@ -47,6 +47,7 @@ export class SignalsService {
       campaignId: campaign.id,
       dateRange: { start: campaign.schedule.startDate, end: new Date() },
       granularity: 'DAILY',
+      metrics: ['impressions', 'clicks', 'conversions', 'spend', 'ctr', 'cpm', 'cpa'],
     });
 
     // Fetch spend counters from cache

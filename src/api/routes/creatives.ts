@@ -40,7 +40,7 @@ export const creativeRoutes: FastifyPluginAsync = async (app) => {
         name: string;
         content: any;
         weight: number;
-        status: string;
+        status: 'ACTIVE' | 'PAUSED' | 'REJECTED';
         metadata: Record<string, string>;
       }>;
 

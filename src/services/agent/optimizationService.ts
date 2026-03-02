@@ -78,7 +78,7 @@ export class OptimizationService {
 
     const creative = await this.creativeRepo.findById(input.creativeId);
     if (!creative || creative.campaignId !== campaign.id) {
-      throw new NotFoundError('Creative not found in this campaign');
+      throw new NotFoundError('Creative', input.creativeId);
     }
 
     await this.creativeRepo.update(input.creativeId, { status: 'PAUSED' });
@@ -101,7 +101,7 @@ export class OptimizationService {
 
     const creative = await this.creativeRepo.findById(input.creativeId);
     if (!creative || creative.campaignId !== campaign.id) {
-      throw new NotFoundError('Creative not found in this campaign');
+      throw new NotFoundError('Creative', input.creativeId);
     }
 
     await this.creativeRepo.update(input.creativeId, { status: 'ACTIVE' });
