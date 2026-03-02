@@ -15,7 +15,8 @@
     "db:migrate": "tsx scripts/migrate.ts",
     "seed": "tsx scripts/seed.ts",
     "simulate": "tsx scripts/simulate-traffic.ts",
-    "benchmark": "tsx scripts/benchmark-bidding.ts"
+    "benchmark": "tsx scripts/benchmark-bidding.ts",
+    "agent-demo": "tsx scripts/agent-demo.ts"
   },
   "dependencies": {
     "fastify": "^4.28.0",

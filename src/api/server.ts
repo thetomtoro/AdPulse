@@ -17,6 +17,7 @@ import { eventRoutes } from './routes/events.js';
 import { conversionRoutes } from './routes/conversions.js';
 import { analyticsRoutes } from './routes/analytics.js';
 import { webhookRoutes } from './routes/webhooks.js';
+import { agentRoutes } from './routes/agent.js';
 
 export interface AppContext {
   config: AppConfig;
@@ -142,6 +143,7 @@ export async function createServer(ctx: AppContext) {
   await app.register(conversionRoutes, { prefix: '/v1/conversions' });
   await app.register(analyticsRoutes, { prefix: '/v1/analytics' });
   await app.register(webhookRoutes, { prefix: '/v1/webhooks' });
+  await app.register(agentRoutes, { prefix: '/v1/agent' });
 
   return app;
 }

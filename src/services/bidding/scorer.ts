@@ -42,7 +42,11 @@ export async function scoreCampaign(
     }
   }
 
-  const finalScore = base * relevanceMultiplier * budgetMultiplier * recencyMultiplier;
+  // AI agent bid multiplier (from optimization feedback loop)
+  const agentMultiplierStr = await cache.get(`agent:bid_multiplier:${campaign.id}`);
+  const agentMultiplier = agentMultiplierStr ? parseFloat(agentMultiplierStr) : 1.0;
+
+  const finalScore = base * relevanceMultiplier * budgetMultiplier * recencyMultiplier * agentMultiplier;
 
   return {
     campaignId: campaign.id,

@@ -105,6 +105,14 @@ USE_MEMORY_DB=false USE_MEMORY_CACHE=false USE_MEMORY_QUEUE=false npm run dev
 | `GET` | `/v1/analytics/campaigns/:id/performance` | Campaign metrics (impressions, clicks, CTR, CPM, spend) |
 | `GET` | `/v1/analytics/campaigns/:id/attribution` | Multi-touch attribution results |
 
+### AI Agent API
+
+| Method | Endpoint | Description |
+|---|---|---|
+| `POST` | `/v1/agent/campaigns` | Declarative one-pass campaign creation |
+| `GET` | `/v1/agent/campaigns/:id/signals` | Real-time performance signals for AI consumption |
+| `POST` | `/v1/agent/campaigns/:id/optimize` | Apply AI-driven optimizations |
+
 ### Webhooks
 
 | Method | Endpoint | Description |
@@ -166,6 +174,50 @@ Bid Response → Impression Pixel → Click Tracker → Conversion API
 | Time Decay | Exponential decay with 7-day half-life |
 | Position Based | 40% first / 20% middle / 40% last |
 
+## AI Agent API — Declarative Campaign Management
+
+Built for AI agents and autonomous marketing systems to manage campaigns through a simplified, intent-driven interface.
+
+### One-Pass Campaign Creation
+
+Instead of requiring 15+ fields across budget, targeting, compliance, and creatives, the agent sends high-level intent:
+
+```json
+{
+  "name": "Summer Promo",
+  "goal": "MAXIMIZE_CLICKS",
+  "budget": { "totalDollars": 1000, "dailyDollars": 100 },
+  "audience": { "segments": ["seg_fashion"], "geos": ["US"], "devices": ["MOBILE"] },
+  "creatives": [{ "type": "NATIVE", "name": "Hero", "headline": "50% Off", "clickUrl": "https://..." }],
+  "constraints": { "maxCpmDollars": 10, "brandSafetyLevel": "MODERATE" }
+}
+```
+
+The system auto-resolves: goal → bid strategy, dollars → cents, geos → compliance (US→CCPA, EU→GDPR), schedule duration → pacing type. Campaign is created and activated in one API call.
+
+### Performance Signals for AI Feedback
+
+`GET /v1/agent/campaigns/:id/signals` returns AI-consumable metrics with actionable recommendations:
+
+- Spend pacing (actual vs expected), budget remaining
+- CTR, conversion rate, CPA
+- Per-creative breakdown
+- Recommendations: `INCREASE_BID`, `DECREASE_BID`, `PAUSE_CREATIVE:crt_xxx`
+
+### Closed-Loop Optimization
+
+`POST /v1/agent/campaigns/:id/optimize` applies AI-driven adjustments:
+
+- `ADJUST_BID` — updates bid score multiplier (0.1x–5.0x), read by the bidding engine in real-time
+- `PAUSE_CREATIVE` / `RESUME_CREATIVE` — toggle creative status based on performance
+- `SHIFT_BUDGET` — adjust daily budget allocation
+- `UPDATE_TARGETING` — add/remove audience segments
+
+```bash
+# Run the full AI agent feedback loop demo
+npm run agent-demo
+```
+
 ## Project Structure
 
 ```
@@ -189,7 +241,8 @@ adpulse/
 │   │   ├── campaign/       # CRUD, lifecycle, validation, repository pattern
 │   │   ├── compliance/     # Consent, brand safety, data retention
 │   │   ├── events/         # Tracking tokens, deduplication, event producer
-│   │   └── webhooks/       # HMAC-signed dispatch with retry
+│   │   ├── webhooks/       # HMAC-signed dispatch with retry
+│   │   └── agent/          # AI agent intent resolver, signals, optimization
 │   ├── shared/             # Types, errors, logger, ID generation
 │   └── index.ts            # Entry point with graceful shutdown
 ├── db/
@@ -218,12 +271,13 @@ npx vitest run --coverage
 npx vitest run tests/unit/attribution.test.ts
 ```
 
-62 tests across 9 test files covering:
+85 tests across 11 test files covering:
 - Campaign validation and business rules
 - Bid scoring, budget pacing, frequency capping
 - Tracking token creation and verification
 - Attribution model calculations (all 5 models)
-- Full API integration (CRUD, bidding, events)
+- AI agent intent resolution and optimization
+- Full API integration (CRUD, bidding, events, agent)
 
 ## Load Testing
 
@@ -284,6 +338,6 @@ npm run benchmark
 - **Cache:** Redis (or in-memory) with TTL, sorted sets
 - **Queue:** Apache Kafka (or in-memory EventEmitter)
 - **Analytics:** TimescaleDB hypertables with continuous aggregates
-- **Testing:** Vitest (62 tests, <1s execution)
+- **Testing:** Vitest (85 tests, <1s execution)
 - **Observability:** Pino structured logging
 - **Deployment:** Docker Compose, Kubernetes manifests with HPA
