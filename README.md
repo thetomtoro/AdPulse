@@ -1,15 +1,15 @@
-# AdPulse — Real-Time Ad Bidding & Campaign Management API
+# AdPulse
 
-A high-performance, privacy-compliant ad tech platform built with TypeScript/Node.js. Features real-time bidding (<50ms p99), a declarative AI agent API for autonomous campaign management, event-driven analytics, and multi-touch attribution.
+Real-time ad bidding and campaign management API in TypeScript/Node. Serves bids in under 50ms at p99, exposes a declarative AI agent API for autonomous campaign management, and runs an event-driven analytics pipeline with multi-touch attribution.
 
 **[Live Dashboard Demo](https://dashboard-eosin-iota-70.vercel.app)** · **[API & Swagger Docs](https://adpulse-production-3916.up.railway.app/docs)**
 
-### Highlights
+## What it does
 
-- **7-step bidding engine** — compliance → eligibility → freq cap → pacing → scoring → creative → response, all under 50ms
-- **AI Agent API** — declare a goal like "maximize clicks for $500" and the system auto-resolves bid strategy, pacing, compliance, and creative weights
-- **Closed-loop optimization** — agents read real-time signals, adjust bid multipliers, and the scorer picks them up instantly
-- **Event pipeline** — HMAC-signed tracking pixels, deduplication, 5 attribution models, streaming budget updates
+- **7-step bidding engine** - compliance → eligibility → freq cap → pacing → scoring → creative → response, all under 50ms
+- **AI Agent API** - declare a goal like "maximize clicks for $500" and the system auto-resolves bid strategy, pacing, compliance, and creative weights
+- **Closed-loop optimization** - agents read real-time signals, adjust bid multipliers, and the scorer picks them up instantly
+- **Event pipeline** - HMAC-signed tracking pixels, deduplication, 5 attribution models, streaming budget updates
 - **85 tests** passing in <1s, zero external dependencies needed to run
 
 ## Architecture
@@ -53,7 +53,7 @@ A high-performance, privacy-compliant ad tech platform built with TypeScript/Nod
 # Install dependencies
 npm install
 
-# Start the dev server (in-memory mode — no Docker required)
+# Start the dev server (in-memory mode - no Docker required)
 npm run dev
 
 # In another terminal, seed demo data
@@ -144,13 +144,13 @@ For development, you can also use the `X-Dev-Advertiser-Id` header to bypass aut
 
 The 7-step bid evaluation pipeline processes requests in under 50ms:
 
-1. **Compliance Gate** — Evaluate GDPR/CCPA consent signals; block or limit data scope
-2. **Eligibility Filter** — Status, schedule, geo, device, placement, budget checks
-3. **Frequency Cap** — Redis sorted-set sliding window per user/campaign
-4. **Budget Pacing** — EVEN, ACCELERATED, or FRONTLOADED spend distribution
-5. **Scoring** — Weighted formula: `baseBid × segmentOverlap × contextMatch × paceMultiplier × recency`
-6. **Creative Selection** — Weighted random from eligible creatives
-7. **Response Assembly** — Build response with HMAC-signed tracking URLs
+1. **Compliance Gate** - Evaluate GDPR/CCPA consent signals; block or limit data scope
+2. **Eligibility Filter** - Status, schedule, geo, device, placement, budget checks
+3. **Frequency Cap** - Redis sorted-set sliding window per user/campaign
+4. **Budget Pacing** - EVEN, ACCELERATED, or FRONTLOADED spend distribution
+5. **Scoring** - Weighted formula: `baseBid × segmentOverlap × contextMatch × paceMultiplier × recency`
+6. **Creative Selection** - Weighted random from eligible creatives
+7. **Response Assembly** - Build response with HMAC-signed tracking URLs
 
 ## Event Pipeline
 
@@ -170,9 +170,9 @@ Bid Response → Impression Pixel → Click Tracker → Conversion API
       (spend counters)  (time-series)    (touchpoint chains)
 ```
 
-- **Deduplication** — Redis SET with TTL prevents double-counting
-- **Tracking tokens** — HMAC-SHA256 signed, time-expiring, tamper-proof
-- **Budget consumer** — Real-time spend tracking from impression events
+- **Deduplication** - Redis SET with TTL prevents double-counting
+- **Tracking tokens** - HMAC-SHA256 signed, time-expiring, tamper-proof
+- **Budget consumer** - Real-time spend tracking from impression events
 
 ## Attribution Models
 
@@ -184,7 +184,7 @@ Bid Response → Impression Pixel → Click Tracker → Conversion API
 | Time Decay | Exponential decay with 7-day half-life |
 | Position Based | 40% first / 20% middle / 40% last |
 
-## AI Agent API — Declarative Campaign Management
+## AI Agent API - Declarative Campaign Management
 
 Built for AI agents and autonomous marketing systems to manage campaigns through a simplified, intent-driven interface.
 
@@ -218,10 +218,10 @@ The system auto-resolves: goal → bid strategy, dollars → cents, geos → com
 
 `POST /v1/agent/campaigns/:id/optimize` applies AI-driven adjustments:
 
-- `ADJUST_BID` — updates bid score multiplier (0.1x–5.0x), read by the bidding engine in real-time
-- `PAUSE_CREATIVE` / `RESUME_CREATIVE` — toggle creative status based on performance
-- `SHIFT_BUDGET` — adjust daily budget allocation
-- `UPDATE_TARGETING` — add/remove audience segments
+- `ADJUST_BID` - updates bid score multiplier (0.1x–5.0x), read by the bidding engine in real-time
+- `PAUSE_CREATIVE` / `RESUME_CREATIVE` - toggle creative status based on performance
+- `SHIFT_BUDGET` - adjust daily budget allocation
+- `UPDATE_TARGETING` - add/remove audience segments
 
 ```bash
 # Run the full AI agent feedback loop demo
